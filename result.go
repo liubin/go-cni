@@ -45,10 +45,11 @@ type IPConfig struct {
 //
 //	domain, search domains and options.
 type Result struct {
-	Interfaces map[string]*Config
-	DNS        []types.DNS
-	Routes     []*types.Route
-	raw        []*types100.Result
+	Interfaces  map[string]*Config
+	DNS         []types.DNS
+	Routes      []*types.Route
+	Annotations map[string]string
+	raw         []*types100.Result
 }
 
 // Raw returns the raw CNI results of multiple networks.
@@ -72,6 +73,10 @@ func (c *libcni) createResult(results []*types100.Result) (*Result, error) {
 	r := &Result{
 		Interfaces: make(map[string]*Config),
 		raw:        results,
+	}
+	// FIXME: add annotations from multiple results.
+	if len(results) > 0 {
+		r.Annotations: results[0].Annotations
 	}
 
 	// Plugins may not need to return Interfaces in result if
